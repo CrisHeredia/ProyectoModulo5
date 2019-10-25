@@ -70,10 +70,13 @@ function verificarRepetidosHori(){
   arreglo = $('.elemento');
   var horizontal = 0;
   for (var i = 0; i < 50; i++) {
-    var elemento = $('.elemento')[i];
-    var posizquierda = $('.elemento')[i-7];
-    var posderecha = $('.elemento')[i+7];
-    if ($(elemento).attr('src') == $(posizquierda).attr('src') && $(elemento).attr('src') == $(posderecha).attr('src')){
+    var temp = $('.elemento')[i];
+    var elemento = $(temp).attr('src');
+    var temp = $('.elemento')[i-7];
+    var posizquierda = $(temp).attr('src');
+    var temp = $('.elemento')[i+7];
+    var posderecha = $(temp).attr('src');
+    if ((elemento == posizquierda) && (elemento == posderecha) && (elemento != null) && (posizquierda != null) && (posderecha != null)){
       if (i != 42 && i != 1 && i != 43 && i != 2 && i != 44 && i != 3 && i != 45 && i != 4 && i != 46 && i != 5 && i != 47 && i != 6){
         $(arreglo[i-7]).attr("class","elemento activo");
         $(arreglo[i]).attr("class","elemento activo");
@@ -89,10 +92,13 @@ function verificarRepetidosVerti(){
   arreglo = $('.elemento');
   var vertical = 0;
   for (var i = 0; i < 50; i++) {
-    var elemento = $('.elemento')[i];
-    var posarriba = $('.elemento')[i-1];
-    var posabajo = $('.elemento')[i+1];
-    if ($(elemento).attr('src') == $(posarriba).attr('src') && $(elemento).attr('src') == $(posabajo).attr('src')){
+    var temp = $('.elemento')[i];
+    var elemento = $(temp).attr('src');
+    var temp = $('.elemento')[i-1];
+    var posarriba = $(temp).attr('src');
+    var temp = $('.elemento')[i+1];
+    var posabajo = $(temp).attr('src');
+    if ((elemento == posarriba) && (elemento == posabajo) && (elemento != null) && (posarriba != null) && (posabajo != null)) {
       if (i != 6 && i != 7 && i != 13 && i != 14 && i != 20 && i != 21 && i != 27 && i != 28 && i != 34 && i != 35 && i != 41 && i != 42){
         $(arreglo[i-1]).attr("class","elemento activo");
         $(arreglo[i]).attr("class","elemento activo");
@@ -109,40 +115,76 @@ function borrarRepetidos(){
   repetidosverti = verificarRepetidosVerti();
   total = $('.elemento').length;
   //alert (repetidoshori,"  ",repetidosverti,"  ",total);
+  if(repetidoshori == 0 && repetidosverti == 0 && total != 49){
+    //alert ("no coincidencias, panel no lleno");
+		//clearInterval(eliminar);
+		//buscarNuevosDulces=0;
+		//rellenarBloques=setInterval(function(){
+		rellenarBloques();
+		//},600);
+    //borrarRepetidos();
+  }
   if(repetidoshori == 1 || repetidosverti == 1){
     //alert ("si coincidencias");
-    //$(".elemento").draggable({disabled:true});
+    $(".elemento").draggable({disabled:true});
     nroborrar = $('.activo').length;
     $(".activo").hide("pulsate", 1000, function(){
-
       $(".activo").remove("img");
       score = score + (nroborrar * 10);
       $("#score-text").html(score);
       //buscarNuevosDulces=0;
   		//nuevosDulces=setInterval(function(){
-  		rellenarBloques();
+  		//rellenarBloques();
   		//},600);
       borrarRepetidos();
       //score = score + scoretmp * 10;
     });
-
   }
-  //if(repetidoshori == 0 && repetidosverti == 0 && total == 49){
-    //alert ("no coincidencias, panel lleno");
-
-  //}
-  //if(repetidoshori == 0 && repetidosverti == 0 && total != 49){
-    //alert ("no coincidencias, panel no lleno");
-		//clearInterval(eliminar);
-		//buscarNuevosDulces=0;
-		//rellenarBloques=setInterval(function(){
-		//rellenarBloques();
-		//},600);
-    //borrarRepetidos();
-  //}
+  if(repetidoshori == 0 && repetidosverti == 0 && total == 49){
+    $(".elemento").draggable({
+			disabled:false,
+			containment:".panel-tablero",
+			revert:true,
+			revertDuration:0,
+			snap:".elemento",
+			snapMode:"inner",
+			snapTolerance:40,
+			start:function(event,ui){
+				mov=mov+1;
+				$("#movimientos-text").html(mov);}
+		});
+  }
+  $(".elemento").droppable({
+		drop:function (event,ui){
+			var dropped=ui.draggable;
+			var droppedOn=this;
+			espera=0;
+			do{
+				espera=dropped.swap($(droppedOn));}
+			while(espera==0);
+			repetidoshori = verificarRepetidosHori();
+			repetidosverti = verificarRepetidosVerti();
+			if(repetidoshori == 0 && repetidosverti == 0){
+				dropped.swap($(droppedOn));}
+			if(repetidoshori == 1 || repetidosverti == 1){
+				borrarRepetidos();
+      }
+    }
+	});
 }
 
+jQuery.fn.swap=function(b){
+	b=jQuery(b)[0];
+	var a=this[0];
+	var t=a.parentNode.insertBefore(document.createTextNode(''),a);
+	b.parentNode.insertBefore(a,b);
+	t.parentNode.insertBefore(b,t);
+	t.parentNode.removeChild(t);
+	return this;
+};
+
 function rellenarBloques(){
+  $(".elemento").draggable({disabled:true});
   for (var j = 1; j < 8; j++) {
     columna = $(".col-"+j).find(".elemento");
     nrollenar = 7 - columna.length;
