@@ -1,12 +1,12 @@
 $(function(){
   prenderTitulo();
   $(".btn-reinicio").on("click", function(){
-	  i=0;
-	  score=0;
-	  mov=0;
-    intervalo=0;
-    borrar=0;
-    tiempo=0;
+	  i = 0;
+	  score = 0;
+	  mov = 0;
+    intervalo = 0;
+    borrar = 0;
+    tiempo = 0;
 	  $(".panel-score").css("width","25%");
 	  $(".panel-tablero").show();
 	  $(".time").show();
@@ -16,13 +16,13 @@ $(function(){
 	  clearInterval(intervalo);
 	  clearInterval(borrar);
 	  clearInterval(tiempo);
-	  min=2;
-	  seg=0;
+	  min = 2;
+	  seg = 0;
     $(".elemento").detach();
-	  intervalo=setInterval(function(){
+	  intervalo = setInterval(function(){
 		  llenarTablero()
 	  },600);
-	  tiempo=setInterval(function(){
+	  tiempo = setInterval(function(){
 		  timer()
 	  },1000);
   })
@@ -41,61 +41,65 @@ function apagarTitulo(){
 };
 //--------------------------------------------------------------------
 function llenarTablero(){
-	i=i+1
+	i = i + 1;
 	$(".elemento").draggable({disabled:true});
   if (i < 8){
-    for(var j=1;j<8;j++){
+    for(var j = 1; j < 8 ; j++){
       numero=Math.floor(Math.random()*4)+1;
       imagen="image/"+numero+".png";
       $(".col-"+j).prepend("<img src="+imagen+" class='elemento'/>").css("justify-content","flex-start");
     }
   }
-	if(i==8){
-	clearInterval(intervalo);
-	borrar=setInterval(function(){
-		borrarRepetidos()
-	},150);}
+	if(i == 8){
+	  clearInterval(intervalo);
+	  borrar=setInterval(function(){
+		  borrarRepetidos()
+	  },150);
+  }
 };
 //----------------------------------------------------------------------
 function timer(){
-	if(seg!=0){
-		seg=seg-1;}
-	if(seg==0){
-		if(min==0){
+	if(seg != 0){
+		seg = seg - 1;
+  }
+	if(seg == 0){
+		if(min == 0){
 			clearInterval(borrar);
 			clearInterval(intervalo);
 			clearInterval(tiempo);
 			$(".panel-tablero").hide("drop","slow",function(){
         $( ".panel-score" ).animate({width:'100%'},3000);});
-			$(".time").hide();}
-		seg=59;
-		min=min-1;}
-    if(seg<10 && seg>=0){
-      seg = "0"+seg;
+			$(".time").hide();
+    }
+		seg = 59;
+		min = min - 1;
+  }
+  if( seg < 10 && seg >= 0){
+      seg = "0" + seg;
     }
 	$("#timer").html("0"+min+":"+seg);
 };
 //---------------------------------------------------------------------
 function borrarRepetidos(){
-	repetidoshori=verificarRepetidosHori();
-	repetidosverti=verificarRepetidosVerti();
+	repetidoshori = verificarRepetidosHori();
+	repetidosverti = verificarRepetidosVerti();
   total = $('.elemento').length;
-	if(repetidoshori==0 && repetidosverti==0 && total!=49){
+	if(repetidoshori == 0 && repetidosverti == 0 && total != 49){
 			rellenarTablero()
   }
-	if(repetidoshori==1||repetidosverti==1){
+	if(repetidoshori == 1 || repetidosverti == 1){
 		$(".elemento").draggable({disabled:true});
 		$("div[class^='col']").css("justify-content","flex-end");
 		$(".activo").hide("pulsate",1000,function(){
-			var scoretmp=$(".activo").length;
+			var scoretmp = $(".activo").length;
 			$(".activo").remove("img");
-			score=score+scoretmp*10;
+			score = score + scoretmp*10;
 			$("#score-text").html(score);
       rellenarTablero();
       borrarRepetidos();
 		});
 	}
-	if(repetidoshori==0 && repetidosverti==0 && total==49){
+	if(repetidoshori == 0 && repetidosverti == 0 && total == 49){
 		$(".elemento").draggable({
 			disabled:false,
 			containment:".panel-tablero",
@@ -106,7 +110,8 @@ function borrarRepetidos(){
 			snapTolerance:40,
 			start:function(event,ui){
 				mov=mov+1;
-				$("#movimientos-text").html(mov);}
+				$("#movimientos-text").html(mov);
+      }
 		});
 	}
 	$(".elemento").droppable({
@@ -115,27 +120,28 @@ function borrarRepetidos(){
 			var droppedOn=this;
 			espera=0;
       do{
-				espera=dropped.swap($(droppedOn));}
+				espera=dropped.swap($(droppedOn));
+      }
 			while(espera==0);
-			repetidoshori=verificarRepetidosHori();
-			repetidosverti=verificarRepetidosVerti();
-			if(repetidoshori==0 && repetidosverti==0){
-				dropped.swap($(droppedOn));}
-			if(repetidoshori==1 || repetidosverti==1){
-				//clearInterval(nuevosDulces);
+			repetidoshori = verificarRepetidosHori();
+			repetidosverti = verificarRepetidosVerti();
+			if(repetidoshori == 0 && repetidosverti == 0){
+				dropped.swap($(droppedOn));
+      }
+			if(repetidoshori == 1 || repetidosverti == 1){
 				clearInterval(borrar);
 				borrar=setInterval(function(){
 					borrarRepetidos()
 				},150);
 			}
-			},
+		},
 	});
 };
 //---------------------------------------------------------------------------
 jQuery.fn.swap=function(b){
-	b=jQuery(b)[0];
-	var a=this[0];
-	var t=a.parentNode.insertBefore(document.createTextNode(''),a);
+	b = jQuery(b)[0];
+	var a = this[0];
+	var t = a.parentNode.insertBefore(document.createTextNode(''),a);
 	b.parentNode.insertBefore(a,b);
 	t.parentNode.insertBefore(b,t);
 	t.parentNode.removeChild(t);
